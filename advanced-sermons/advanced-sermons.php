@@ -5,7 +5,7 @@ Plugin Name: Advanced Sermons
 Plugin URI: https://advancedsermons.com/
 Description: Elevate your church's digital outreach with audio/video sermons, organized speakers, and series management.
 Author: WP Codeus
-Version: 3.4
+Version: 3.5
 Author URI: https://wpcodeus.com/
 License: GPL2
 Text Domain: advanced-sermons

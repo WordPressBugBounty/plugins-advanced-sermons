@@ -364,25 +364,47 @@ function asp_sermon_details_metabox_fields()
 }
 
 
-/* Do something with the sermon data entered */
-add_action('save_post', 'asp_save_sermon_details');
-function asp_save_sermon_details($post_id)
-{
-    if (defined("DOING_AJAX") and DOING_AJAX) {
-        return;
-    }
-    if (!current_user_can('edit_post', $post_id)) {
-        return;
-    }
-    if (!isset($_POST['meta_box_nonce']) || !wp_verify_nonce($_POST['meta_box_nonce'], 'wpp_meta_box_nonce')) {
-        return;
-    }
+// Load allowed HTML for various fields for sanitization
+function asp_sermon_details_get_allowed_html() {
+	return array(
+		'a' => array(
+			'href'  => array(),
+			'title' => array(),
+			'target' => array(),
+			'style' => array(),
+		),
+		'iframe' => array(
+			'src'             => array(),
+			'width'           => array(),
+			'height'          => array(),
+			'frameborder'     => array(),
+			'allowfullscreen' => array(),
+			'allow'           => array(),
+			'referrerpolicy'  => array(),
+			'sandbox'         => array(),
+			'title'           => array(),
+		),
+		'div' => array(
+			'style' => array(),
+		),
+	);
+}
 
-    $allowed_html = array(
-        'a' => array(
-            'href' => array()
-        )
-    );
+
+// Do something with the sermon data entered
+add_action('save_post', 'asp_save_sermon_details');
+function asp_save_sermon_details($post_id) {
+	if (defined("DOING_AJAX") && DOING_AJAX) {
+		return;
+	}
+	if (!current_user_can('edit_post', $post_id)) {
+		return;
+	}
+	if (!isset($_POST['meta_box_nonce']) || !wp_verify_nonce($_POST['meta_box_nonce'], 'wpp_meta_box_nonce')) {
+		return;
+	}
+
+	$allowed_html = asp_sermon_details_get_allowed_html();
 
 	if (isset($_POST['sermon_youtube'])) {
 		update_post_meta($post_id, 'asp_sermon_youtube', wp_kses($_POST['sermon_youtube'], $allowed_html));
@@ -394,27 +416,13 @@ function asp_save_sermon_details($post_id)
 		update_post_meta($post_id, 'asp_sermon_facebook', wp_kses($_POST['sermon_facebook'], $allowed_html));
 	}
 	if (isset($_POST['sermon_video_embed'])) {
-		$allowed_html = array(
-			'iframe' => array(
-				'src'             => array(),
-				'width'           => array(),
-				'height'          => array(),
-				'frameborder'     => array(),
-				'allowfullscreen' => array(),
-				'allow'           => array(),
-				'referrerpolicy'  => array(),
-				'sandbox'         => array(),
-				'title'           => array(),
-			),
-		);
-		$sermon_video_embed = wp_kses($_POST['sermon_video_embed'], $allowed_html);
-		update_post_meta($post_id, 'asp_sermon_video_embed', $sermon_video_embed);
+		update_post_meta($post_id, 'asp_sermon_video_embed', wp_kses($_POST['sermon_video_embed'], $allowed_html));
 	}
 	if (isset($_POST['sermon_mp4'])) {
 		update_post_meta($post_id, 'asp_sermon_mp4', wp_kses($_POST['sermon_mp4'], $allowed_html));
 	}
 	if (isset($_POST['sermon_audio_embed'])) {
-		update_post_meta($post_id, 'asp_sermon_audio_embed', $_POST['sermon_audio_embed']);
+		update_post_meta($post_id, 'asp_sermon_audio_embed', wp_kses($_POST['sermon_audio_embed'], $allowed_html));
 	}
 	if (isset($_POST['sermon_soundcloud'])) {
 		update_post_meta($post_id, 'asp_sermon_soundcloud', wp_kses($_POST['sermon_soundcloud'], $allowed_html));
@@ -429,11 +437,10 @@ function asp_save_sermon_details($post_id)
 		update_post_meta($post_id, 'asp_sermon_bulletin', wp_kses($_POST['sermon_bulletin'], $allowed_html));
 	}
 	if (isset($_POST['asp_single_sermon_video_select'])) {
-        $selected_video_type = $_POST['asp_single_sermon_video_select'];
-        $selected_video_type_url = $_POST["sermon_".$selected_video_type];
+		$selected_video_type = $_POST['asp_single_sermon_video_select'];
+		$selected_video_type_url = $_POST["sermon_".$selected_video_type];
+		update_post_meta($post_id, 'asp_sermon_video_type_select', $selected_video_type);
+	}
 
-        update_post_meta($post_id, 'asp_sermon_video_type_select', $selected_video_type);
-    }
-
-    do_action('asp_hook_sermon_details_metabox_save');
+	do_action('asp_hook_sermon_details_metabox_save');
 }

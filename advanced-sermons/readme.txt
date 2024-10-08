@@ -4,7 +4,7 @@ Tags: church, sermon, sermons, ministry, bible, series
 Requires at least: 4.6
 Tested up to: 6.6
 Requires PHP: 7.3
-Stable tag: 3.4
+Stable tag: 3.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -103,6 +103,9 @@ Not yet as a network activated plugin, however you can install it individually o
 
 == Changelog ==
 
+= 3.5 =
+* Updated: Improved Field Sanitization
+* Fix: Issue with speaker images on single sermon template when using drag & drop ordering for speakers.
 
 = 3.4 =
 * Updated: XSS Security improvements

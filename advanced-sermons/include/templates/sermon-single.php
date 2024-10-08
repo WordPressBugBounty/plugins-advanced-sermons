@@ -84,16 +84,35 @@ setSermonsViews(get_the_ID());
                     <?php $asp_sermon_content = get_the_content(); ?>
 
                     <?php
-                        // Get Sermon Speaker Image
-                        $terms = get_the_terms($post->ID, 'sermon_speaker');
-                        if (!empty($terms)) {
-                            $asp_speaker = array();
-                            foreach($terms as $term) {
-                                $image_id = get_term_meta($term->term_id, 'speaker-taxonomy-image-id', true);
-                                $asp_speaker[] = wp_get_attachment_image( $image_id, "medium", false, array( "alt" => $term->name ) );
-                            }
-                        }
-                    ?>
+	                    // Get the drag-and-drop ordering setting for speakers
+	                    $orderby = get_option('asp_archive_speaker_dropdown_orderby');
+
+                        // Get speaker terms, with custom ordering if drag-and-drop is enabled
+	                    if ($orderby === 'custom_order') {
+		                    $terms = get_terms(array(
+			                    'taxonomy' => 'sermon_speaker',
+			                    'object_ids' => $post->ID,
+			                    'orderby' => 'meta_value_num',
+			                    'meta_key' => 'asp_term_order',
+			                    'order' => 'ASC'
+		                    ));
+	                    } else {
+		                    $terms = get_the_terms($post->ID, 'sermon_speaker');
+	                    }
+
+                        // Get speaker images
+	                    $asp_speaker = array();
+
+	                    if (!empty($terms) && !is_wp_error($terms)) {
+		                    foreach ($terms as $term) {
+			                    $image_id = get_term_meta($term->term_id, 'speaker-taxonomy-image-id', true);
+			                    if ($image_id) {
+				                    // Store images with the slug as the key for matching
+				                    $asp_speaker[$term->slug] = wp_get_attachment_image($image_id, "medium", false, array("alt" => esc_attr($term->name)));
+			                    }
+		                    }
+	                    }
+	                    ?>
 
                         <?php do_action( 'asp_hook_sermon_single_top' ); ?>
 
@@ -108,13 +127,13 @@ setSermonsViews(get_the_ID());
                                   if (empty($asp_archive_button_url)) {
                                       if (get_option('permalink_structure')) {
                                           // Pretty permalinks enabled
-                                          echo get_home_url() . "/" . $asp_archive_slug . "/";
+	                                      echo esc_url( get_home_url() . "/" . $asp_archive_slug . "/" );
                                       } else {
                                           // Non-pretty permalinks
-                                          echo get_home_url() . "/?post_type=sermons";
+	                                      echo esc_url( get_home_url() . "/?post_type=sermons" );
                                       }
                                   } else {
-                                      echo get_home_url() . "/" . $asp_archive_button_url . "/";
+	                                  echo esc_url( get_home_url() . "/" . $asp_archive_button_url . "/" );
                                   }
                                   ?>" target="_self">
                                   <i class="fa fa-angle-left" aria-hidden="true"></i>
@@ -134,79 +153,79 @@ setSermonsViews(get_the_ID());
                                 <div class='preached-date'><?php if ( !empty( $asp_date_format ) ) { echo the_time( $asp_date_format );  } else { echo the_time( 'F j, Y' ); } ?></div>
 
                                 <?php if (isset($asp_sermon_series[0])) { ?>
-                  									<div class='sermon-series'>
-                    										<p><?php _e( 'Series', 'advanced-sermons' ); ?>:
-                      											<?php
-                        												$count = count($asp_sermon_series);
-                        												$i = 0;
-                        												foreach ($asp_sermon_series as $index => $series) {
-                          													$i++;
+                                    <div class='sermon-series'>
+                                            <p><?php _e( 'Series', 'advanced-sermons' ); ?>:
+                                                <?php
+                                                        $count = count($asp_sermon_series);
+                                                        $i = 0;
+                                                        foreach ($asp_sermon_series as $index => $series) {
+                                                            $i++;
 
-                          													// Check the permalink structure
-                          													if ( get_option( 'permalink_structure' ) ) { // pretty permalinks
-                          														echo "<a href='" . get_home_url() . "/" . $asp_archive_slug . "/?sermon_series=" . $asp_sermon_series_slug[$index] . "'>" . $series . "</a>";
-                          													} else { // non-pretty permalinks
-                          														echo "<a href='" . get_home_url() . "/?post_type=sermons&sermon_series=" . $asp_sermon_series_slug[$index] . "'>" . $series . "</a>";
-                          													}
+                                                            // Check the permalink structure
+                                                            if ( get_option( 'permalink_structure' ) ) { // pretty permalinks
+                                                                echo "<a href='" . esc_url( get_home_url() . "/" . $asp_archive_slug . "/?sermon_series=" . $asp_sermon_series_slug[$index] ) . "'>" . esc_html( $series ) . "</a>";
+                                                            } else { // non-pretty permalinks
+                                                                echo "<a href='" . esc_url( get_home_url() . "/?post_type=sermons&sermon_series=" . $asp_sermon_series_slug[$index] ) . "'>" . esc_html( $series ) . "</a>";
+                                                            }
 
-                          													if ($i < $count) {
-                          														echo ", ";
-                          													}
-                        												}
-                      											?>
-                    										</p>
-                  									</div>
-                  								<?php } ?>
+                                                            if ($i < $count) {
+                                                                echo ", ";
+                                                            }
+                                                        }
+                                                ?>
+                                            </p>
+                                    </div>
+                                  <?php } ?>
 
                                   <?php if (isset($asp_sermon_topic[0])) { ?>
-                    									<div class='sermon-topic'>
-                      										<p>
-                        											<?php
-                          												if (!empty($asp_topic_label)) { _e( "$asp_topic_label", "advanced-sermons" ); } else { _e( 'Topic', 'advanced-sermons' ); } ?>:
-                          												<?php $count = count($asp_sermon_topic);
-                          												$i = 0;
-                          												foreach ($asp_sermon_topic as $index => $topic) {
-                            													$i++;
+                                        <div class='sermon-topic'>
+                                            <p>
+                                                    <?php
+                                                        if (!empty($asp_topic_label)) { _e( "$asp_topic_label", "advanced-sermons" ); } else { _e( 'Topic', 'advanced-sermons' ); } ?>:
+                                                        <?php $count = count($asp_sermon_topic);
+                                                        $i = 0;
+                                                        foreach ($asp_sermon_topic as $index => $topic) {
+                                                                $i++;
 
-                            													if (get_option('permalink_structure')) {
-                            														echo "<a href='" . get_home_url() . "/" . $asp_archive_slug . "/?sermon_topics=" . $asp_sermon_topic_slug[$index] . "'>" . $topic . "</a>";
-                            													} else {
-                            														echo "<a href='" . get_home_url() . "/?post_type=sermons&sermon_topics=" . $asp_sermon_topic_slug[$index] . "'>" . $topic . "</a>";
-                            													}
+                                                                if (get_option('permalink_structure')) {
+                                                                    echo "<a href='" . esc_url( get_home_url() . "/" . $asp_archive_slug . "/?sermon_topics=" . $asp_sermon_topic_slug[$index] ) . "'>" . esc_html( $topic ) . "</a>";
+                                                                } else {
+                                                                    echo "<a href='" . esc_url( get_home_url() . "/?post_type=sermons&sermon_topics=" . $asp_sermon_topic_slug[$index] ) . "'>" . esc_html( $topic ) . "</a>";
+                                                                }
 
-                            													if ($i < $count) {
-                            														echo ", ";
-                            													}
-                          												}
-                        											?>
-                      										</p>
-                    									</div>
-                  								<?php } ?>
+                                                                if ($i < $count) {
+                                                                    echo ", ";
+                                                                }
+                                                        }
+                                                    ?>
+                                            </p>
+                                        </div>
+                                  <?php } ?>
 
                                   <?php if (isset($asp_sermon_book[0])) { ?>
-                    									<div class='sermon-book'>
-                      										<p>
-                        											<?php
-                        												if (!empty($asp_book_label)) { _e( "$asp_book_label", "advanced-sermons" ); } else { _e( 'Book', 'advanced-sermons' ); } ?>:
-                        												<?php $count = count($asp_sermon_book);
-                        												$i = 0;
-                        												foreach ($asp_sermon_book as $index => $book) {
-                          													$i++;
+                                        <div class='sermon-book'>
+                                            <p>
+                                                <?php
+                                                    if (!empty($asp_book_label)) { _e( "$asp_book_label", "advanced-sermons" ); } else { _e( 'Book', 'advanced-sermons' ); } ?>:
+                                                    <?php $count = count($asp_sermon_book);
+                                                    $i = 0;
+                                                    foreach ($asp_sermon_book as $index => $book) {
+                                                        $i++;
 
-                          													if (get_option('permalink_structure')) {
-                          														echo "<a href='" . get_home_url() . "/" . $asp_archive_slug . "/?sermon_book=" . $asp_sermon_book_slug[$index] . "'>" . $book . "</a>";
-                          													} else {
-                          														echo "<a href='" . get_home_url() . "/?post_type=sermons&sermon_book=" . $asp_sermon_book_slug[$index] . "'>" . $book . "</a>";
-                          													}
+                                                        if (get_option('permalink_structure')) {
+                                                            echo "<a href='" . esc_url( get_home_url() . "/" . $asp_archive_slug . "/?sermon_book=" . $asp_sermon_book_slug[$index] ) . "'>" . esc_html( $book ) . "</a>";
+                                                        } else {
+                                                            echo "<a href='" . esc_url( get_home_url() . "/?post_type=sermons&sermon_book=" . $asp_sermon_book_slug[$index] ) . "'>" . esc_html( $book ) . "</a>";
+                                                        }
 
-                          													if ($i < $count) {
-                          														echo ", ";
-                          													}
-                          												}
-                        											?>
-                      										</p>
-                    									</div>
-                  								<?php } ?>
+                                                        if ($i < $count) {
+                                                            echo ", ";
+                                                        }
+                                                    }
+                                                ?>
+                                            </p>
+                                        </div>
+                                  <?php } ?>
 
                                   <!-- Action hook to add custom content in single sermon header details -->
                                   <?php do_action( 'asp_hook_sermon_single_header_details' ); ?>
@@ -227,56 +246,61 @@ setSermonsViews(get_the_ID());
 
                         <div class='sermon-details'>
 
-                          <?php if (isset($asp_sermon_speaker[0])) { ?>
-                              <div class='sermon-speaker-holder'>
-                                  <?php
-                                      $count = count($asp_sermon_speaker);
-                                      $i = 0;
-                                      foreach ($asp_sermon_speaker as $index => $speaker) {
-                                          $i++;
-                                          echo "<div class='details-sermon-speaker'>";
-                                          echo "<div class='speaker-image'>";
-                                          if (!empty($asp_speaker[$index])) {
-                                              echo $asp_speaker[$index];
-                                          }
-                                          echo "</div>";
-                                          echo "<p>";
-                    										  if (get_option('permalink_structure')) {
-                    											  echo "<a href='" . get_home_url() . "/" . $asp_archive_slug . "/?sermon_speaker=" . $asp_sermon_speaker_slug[$index] . "'>" . $speaker . "</a>";
-                    										  } else {
-                    											  echo "<a href='" . get_home_url() . "/?post_type=sermons&sermon_speaker=" . $asp_sermon_speaker_slug[$index] . "'>" . $speaker . "</a>";
-                    										  }
-                    										  echo "</p>";
-                                          echo "</div>";
-                                      }
-                                  ?>
-                              </div>
-                          <?php } ?>
+	                        <?php if (!empty($asp_sermon_speaker)) { ?>
+                                <div class='sermon-speaker-holder'>
+			                        <?php
+			                        foreach ($asp_sermon_speaker as $index => $speaker) {
+				                        $speaker_slug = isset($asp_sermon_speaker_slug[$index]) ? esc_attr($asp_sermon_speaker_slug[$index]) : ''; // Sanitize slug
+				                        ?>
+                                        <div class='details-sermon-speaker'>
+                                            <div class='speaker-image'>
+						                        <?php
+						                        // Display the correct image based on the speaker slug
+						                        if (!empty($asp_speaker[$speaker_slug])) {
+							                        echo $asp_speaker[$speaker_slug]; // Echo image HTML
+						                        }
+						                        ?>
+                                            </div>
+                                            <p>
+						                        <?php
+						                        // Generate the link to the speaker's archive page
+						                        $speaker_url = get_option('permalink_structure')
+							                        ? get_home_url() . "/" . esc_attr($asp_archive_slug) . "/?sermon_speaker=" . $speaker_slug
+							                        : get_home_url() . "/?post_type=sermons&sermon_speaker=" . $speaker_slug;
+						                        echo "<a href='" . esc_url($speaker_url) . "'>" . esc_html($speaker) . "</a>";
+						                        ?>
+                                            </p>
+                                        </div>
+				                        <?php
+			                        }
+			                        ?>
+                                </div>
+	                        <?php } ?>
 
-                          <div class='sermon-media-holder'>
+                            <div class='sermon-media-holder'>
 
                                 <?php if (!empty($asp_sermon_soundcloud )) { ?>
                                     <div class="sermon-soundcloud asp-sermon-downloadable">
-                                        <a href='<?php echo $asp_sermon_soundcloud; ?>' target='_blank'><i class="fab fa-soundcloud"></i><span><?php if (empty($asp_language_sermon_details_soundcloud)) { _e( 'Soundcloud', 'advanced-sermons' ); } else { _e( "$asp_language_sermon_details_soundcloud", "advanced-sermons" ); } ?></span></a>
-                                        <span class="asp-download-tooltip"><?php if (empty($asp_language_listen_tooltip)) { _e( 'Listen', 'advanced-sermons' ); } else { _e( "$asp_language_listen_tooltip", "advanced-sermons" ); } ?></span>
+                                        <a href='<?php echo esc_url( $asp_sermon_soundcloud ); ?>' target='_blank'><i class="fab fa-soundcloud"></i><span><?php if (empty($asp_language_sermon_details_soundcloud)) { esc_html_e( 'Soundcloud', 'advanced-sermons' ); } else { esc_html_e( "$asp_language_sermon_details_soundcloud", "advanced-sermons" ); } ?></span></a>
+                                        <span class="asp-download-tooltip"><?php if (empty($asp_language_listen_tooltip)) { esc_html_e( 'Listen', 'advanced-sermons' ); } else { esc_html_e( "$asp_language_listen_tooltip", "advanced-sermons" ); } ?></span>
                                     </div>
                                 <?php } ?>
                                 <?php if (!empty($asp_sermon_audio_file)) { ?>
                                     <div class="sermon-mp4-file asp-sermon-downloadable">
-                                        <a href='<?php echo $asp_sermon_audio_file; ?>' target='_blank' download><i class="far fa-file-audio"></i><span><?php if (empty($asp_language_sermon_details_listen)) { _e( 'Audio', 'advanced-sermons' ); } else { _e( "$asp_language_sermon_details_listen", "advanced-sermons" ); } ?></span></a>
-                                        <span class="asp-download-tooltip"><?php if (empty($asp_language_download_tooltip)) { _e( 'Download', 'advanced-sermons' ); } else { _e( "$asp_language_download_tooltip", "advanced-sermons" ); } ?></span>
+                                        <a href='<?php echo esc_url( $asp_sermon_audio_file ); ?>' target='_blank' download><i class="far fa-file-audio"></i><span><?php if (empty($asp_language_sermon_details_listen)) { esc_html_e( 'Audio', 'advanced-sermons' ); } else { esc_html_e( "$asp_language_sermon_details_listen", "advanced-sermons" ); } ?></span></a>
+                                        <span class="asp-download-tooltip"><?php if (empty($asp_language_download_tooltip)) { esc_html_e( 'Download', 'advanced-sermons' ); } else { esc_html_e( "$asp_language_download_tooltip", "advanced-sermons" ); } ?></span>
                                     </div>
                                 <?php } ?>
                                 <?php if (!empty($asp_sermon_bulletin)) { ?>
                                     <div class="sermon-bulletin-file asp-sermon-downloadable">
-                                        <a href='<?php echo $asp_sermon_bulletin; ?>' target='_blank' download><i class="far fa-sticky-note"></i><span><?php if (empty($asp_language_sermon_details_bulletin)) { _e( 'Bulletin', 'advanced-sermons' ); } else { _e( "$asp_language_sermon_details_bulletin", "advanced-sermons" ); } ?></span></a>
-                                        <span class="asp-download-tooltip"><?php if (empty($asp_language_download_tooltip)) { _e( 'Download', 'advanced-sermons' ); } else { _e( "$asp_language_download_tooltip", "advanced-sermons" ); } ?></span>
+                                        <a href='<?php echo esc_url( $asp_sermon_bulletin ); ?>' target='_blank' download><i class="far fa-sticky-note"></i><span><?php if (empty($asp_language_sermon_details_bulletin)) { esc_html_e( 'Bulletin', 'advanced-sermons' ); } else { esc_html_e( "$asp_language_sermon_details_bulletin", "advanced-sermons" ); } ?></span></a>
+                                        <span class="asp-download-tooltip"><?php if (empty($asp_language_download_tooltip)) { esc_html_e( 'Download', 'advanced-sermons' ); } else { esc_html_e( "$asp_language_download_tooltip", "advanced-sermons" ); } ?></span>
                                     </div>
                                 <?php } ?>
                                 <?php if (!empty($asp_sermon_pdf)) { ?>
                                     <div class="sermon-pdf-file asp-sermon-downloadable">
-                                        <a href='<?php echo $asp_sermon_pdf; ?>' target='_blank' download><i class="far fa-file-pdf"></i><span><?php if (empty($asp_language_sermon_details_download)) { _e( 'Notes', 'advanced-sermons' ); } else { _e( "$asp_language_sermon_details_download", "advanced-sermons" ); } ?></span></a>
-                                        <span class="asp-download-tooltip"><?php if (empty($asp_language_download_tooltip)) { _e( 'Download', 'advanced-sermons' ); } else { _e( "$asp_language_download_tooltip", "advanced-sermons" ); } ?></span>
+                                        <a href='<?php echo esc_url( $asp_sermon_pdf ); ?>' target='_blank' download><i class="far fa-file-pdf"></i><span><?php if (empty($asp_language_sermon_details_download)) { esc_html_e( 'Notes', 'advanced-sermons' ); } else { esc_html_e( "$asp_language_sermon_details_download", "advanced-sermons" ); } ?></span></a>
+                                        <span class="asp-download-tooltip"><?php if (empty($asp_language_download_tooltip)) { esc_html_e( 'Download', 'advanced-sermons' ); } else { esc_html_e( "$asp_language_download_tooltip", "advanced-sermons" ); } ?></span>
                                     </div>
                                 <?php } ?>
 
@@ -306,8 +330,8 @@ setSermonsViews(get_the_ID());
                                     ?>
                                 </h4>
                                 <div class='sermon-audio-player'>
-                                    <?php echo do_shortcode( "[audio src='$asp_sermon_audio_file']" ); ?>
-                                    <a class="sermon-audio-player-download" href="<?php echo $asp_sermon_audio_file; ?>" target="_blank" download><span class="asp-download-audio-icon"><?php echo file_get_contents(plugin_dir_path(dirname(__FILE__)) . 'assets/download-audio.svg'); ?></span></a>
+		                            <?php echo do_shortcode( "[audio src='$asp_sermon_audio_file']" ); ?>
+                                    <a class="sermon-audio-player-download" href="<?php echo esc_url($asp_sermon_audio_file); ?>" target="_blank" download><span class="asp-download-audio-icon"><?php echo file_get_contents(plugin_dir_path(dirname(__FILE__)) . 'assets/download-audio.svg'); ?></span></a>
                                 </div>
                             </div>
                         <?php }
@@ -347,9 +371,9 @@ setSermonsViews(get_the_ID());
                             <div class="sermon-comments"><?php comments_template('', true); ?></div>
                         <?php } else { /* Disable Comments */ } ?>
 
-        								<!-- Related Sermons -->
+                        <!-- Related Sermons -->
 
-        								<?php do_action( 'asp_related_sermons' ); ?>
+                        <?php do_action( 'asp_related_sermons' ); ?>
 
                         <?php do_action( 'asp_hook_sermon_single_bottom' ); ?>
 
@@ -360,7 +384,7 @@ setSermonsViews(get_the_ID());
 
                     <!-- Sermon Sidebar Section -->
 
-        						<?php do_action( 'asp_sermon_sidebar' ); ?>
+                    <?php do_action( 'asp_sermon_sidebar' ); ?>
 
 
                 </div>
