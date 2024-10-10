@@ -368,10 +368,10 @@ function asp_sermon_details_metabox_fields()
 function asp_sermon_details_get_allowed_html() {
 	return array(
 		'a' => array(
-			'href'  => array(),
-			'title' => array(),
+			'href'   => array(),
+			'title'  => array(),
 			'target' => array(),
-			'style' => array(),
+			'style'  => array(),
 		),
 		'iframe' => array(
 			'src'             => array(),
@@ -383,9 +383,39 @@ function asp_sermon_details_get_allowed_html() {
 			'referrerpolicy'  => array(),
 			'sandbox'         => array(),
 			'title'           => array(),
+			'scrolling'       => array(),
+			'style'           => array(),
+			'id'              => array(), // Added flexibility
 		),
 		'div' => array(
 			'style' => array(),
+			'id'    => array(),
+			'class' => array(),
+			'data-*' => true, // Allow all data attributes, useful for embed scripts
+		),
+		'audio' => array(
+			'src'      => array(),
+			'controls' => array(),
+			'autoplay' => array(),
+			'loop'     => array(),
+		),
+		'source' => array(
+			'src'  => array(),
+			'type' => array(),
+		),
+		'script' => array(
+			'src'   => array(),
+			'async' => array(),
+			'defer' => array(),
+			'type'  => array(),
+			'id'    => array(),
+		),
+		'p' => array(
+			'style' => array(),
+		),
+		'span' => array(
+			'style' => array(),
+			'class' => array(),
 		),
 	);
 }
