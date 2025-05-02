@@ -2,7 +2,7 @@
 Contributors: wpcodeus
 Tags: church, sermon, sermons, series, video gallery
 Requires at least: 4.6
-Tested up to: 6.6
+Tested up to: 6.8
 Requires PHP: 7.3
 Stable tag: 3.6
 License: GPLv2 or later
