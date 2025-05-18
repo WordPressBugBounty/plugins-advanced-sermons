@@ -157,7 +157,7 @@ function asp_sermon_details_metabox_fields()
             <tr class="asp-single-video-type <?php echo $asp_check_video_youtube ? '' : 'asp-single-video-type-hidden'; ?>"
                 data-asp-video-type="youtube">
                 <th><?php _e('YouTube Video', 'advanced-sermons') ?></th>
-                <td><input type="text" name="sermon_youtube" id="sermon_youtube" value="<?php echo $sermonyoutube; ?>"/>
+                <td><input type="text" name="sermon_youtube" id="sermon_youtube" value="<?php echo esc_attr( $sermonyoutube ); ?>"/>
                     <p>
                         <?php echo sprintf( __( "To add a YouTube or YouTube Live video to your %s, please enter or paste the YouTube URL here.", "advanced-sermons" ), $sermon_label_slug) ?>
                     </p>
@@ -172,7 +172,7 @@ function asp_sermon_details_metabox_fields()
             <tr class="asp-single-video-type <?php echo $asp_check_video_vimeo ? '' : 'asp-single-video-type-hidden'; ?>"
                 data-asp-video-type="vimeo">
                 <th><?php _e('Vimeo Video', 'advanced-sermons') ?></th>
-                <td><input type="text" name="sermon_vimeo" id="sermon_vimeo" value="<?php echo $sermonvimeo; ?>"/>
+                <td><input type="text" name="sermon_vimeo" id="sermon_vimeo" value="<?php echo esc_attr( $sermonvimeo ); ?>"/>
                     <p>
 	                    <?php echo sprintf( __( "To add a Vimeo video to your %s, please enter or paste the Vimeo URL here.", "advanced-sermons" ), $sermon_label_slug) ?>
                     </p>
@@ -191,7 +191,7 @@ function asp_sermon_details_metabox_fields()
                     data-asp-video-type="facebook">
                     <th><?php _e('Facebook Video', 'advanced-sermons') ?></th>
                     <td><input type="text" name="sermon_facebook" id="sermon_facebook"
-                               value="<?php echo $sermonfacebook; ?>"/>
+                               value="<?php echo esc_attr( $sermonfacebook ); ?>"/>
                         <p>
 	                        <?php echo sprintf( __( "To add a Facebook or Facebook Live video to your %s, please enter or paste the Facebook URL here.", "advanced-sermons" ), $sermon_label_slug) ?>
                         </p>
@@ -223,7 +223,7 @@ function asp_sermon_details_metabox_fields()
             <?php if (empty($asp_hide_audio_meta)) { ?>
                 <tr>
                     <th><?php _e('Audio File', 'advanced-sermons') ?></th>
-                    <td><input type="text" name="sermon_mp4" id="sermon_mp4" value="<?php echo $sermonmp4; ?>"/>
+                    <td><input type="text" name="sermon_mp4" id="sermon_mp4" value="<?php echo esc_attr( $sermonmp4 ); ?>"/>
                         <input type="button" name="sermon_mp4_button" id="sermon_mp4_button"
                                value="<?php _e('Add Sermon Audio') ?>"/>
                         <p>
@@ -252,7 +252,7 @@ function asp_sermon_details_metabox_fields()
                 <tr>
                     <th><?php _e('SoundCloud', 'advanced-sermons') ?></th>
                     <td><input type="text" name="sermon_soundcloud" id="sermon_soundcloud"
-                               value="<?php echo $soundcloud; ?>"/>
+                               value="<?php echo esc_attr( $soundcloud ); ?>"/>
                         <p>
                             <?php echo sprintf( __( "Paste a SoundCloud audio URL for this %s. Displays only as a button.", "advanced-sermons" ), $sermon_label_slug); ?>
                         </p>
@@ -270,7 +270,7 @@ function asp_sermon_details_metabox_fields()
                 <tr class="asp-pro-version asp-meta-box">
                     <th><?php _e('Scripture', 'advanced-sermons') ?></th>
                     <td><input type="text" name="sermon_bible_passage" id="sermon_bible_passage"
-                               value="<?php echo $sermon_bible_passage; ?>"/>
+                               value="<?php echo esc_attr( $sermon_bible_passage ); ?>"/>
                         <p>
                             <?php _e("Enter the scripture for this sermon. Seperate multiple scriptures with a comma. Example: 1 Corinthians 13:4-8, John 3:16",
                                 "advanced-sermons") ?>
@@ -284,7 +284,7 @@ function asp_sermon_details_metabox_fields()
             <?php if (empty($asp_hide_pdf_meta)) { ?>
                 <tr>
                     <th><?php echo sprintf( __( "%s Notes", "advanced-sermons" ), $sermon_label); ?></th>
-                    <td><input type="text" name="sermon_pdf" id="sermon_pdf" value="<?php echo $sermonpdf; ?>"/>
+                    <td><input type="text" name="sermon_pdf" id="sermon_pdf" value="<?php echo esc_attr( $sermonpdf ); ?>"/>
                         <input type="button" name="sermon_pdf_button" id="sermon_pdf_button"
                                value="<?php _e('Add File') ?>"/>
                         <p>
@@ -300,7 +300,7 @@ function asp_sermon_details_metabox_fields()
                 <tr class="asp-pro-version asp-meta-box">
                     <th><?php _e("Bulletin", "advanced-sermons") ?></th>
                     <td><input type="text" name="sermon_bulletin" id="sermon_bulletin"
-                               value="<?php echo $sermon_bulletin; ?>"/>
+                               value="<?php echo esc_attr( $sermon_bulletin ); ?>"/>
                         <input type="button" name="sermon_bulletin_button" id="sermon_bulletin_button"
                                value="<?php _e('Add File') ?>"/>
                         <p>

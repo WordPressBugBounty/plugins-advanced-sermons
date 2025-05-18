@@ -4,7 +4,7 @@ Tags: church, sermon, sermons, series, video gallery
 Requires at least: 4.6
 Tested up to: 6.8
 Requires PHP: 7.3
-Stable tag: 3.6
+Stable tag: 3.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -102,6 +102,11 @@ In the case that you need help with Advanced Sermons, you can submit a support t
 Not yet as a network activated plugin, however you can install it individually on a multisite setup. We hope to work on network activated in the future.
 
 == Changelog ==
+
+= 3.7 =
+* Updated: Field sanitization improvements
+* Updated: Preload audio postmeta to show sermon audio file time before interaction
+* Fix: Bug with Sermon date format
 
 = 3.6 =
 * Updated: Adjusted allowed HTML for field sanitization for better combatibility with embeds.

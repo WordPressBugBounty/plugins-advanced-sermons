@@ -330,7 +330,7 @@ setSermonsViews(get_the_ID());
                                     ?>
                                 </h4>
                                 <div class='sermon-audio-player'>
-		                            <?php echo do_shortcode( "[audio src='$asp_sermon_audio_file']" ); ?>
+		                            <?php echo do_shortcode( "[audio src='$asp_sermon_audio_file' preload='metadata']" ); ?>
                                     <a class="sermon-audio-player-download" href="<?php echo esc_url($asp_sermon_audio_file); ?>" target="_blank" download><span class="asp-download-audio-icon"><?php echo file_get_contents(plugin_dir_path(dirname(__FILE__)) . 'assets/download-audio.svg'); ?></span></a>
                                 </div>
                             </div>

@@ -55,7 +55,7 @@ if ( !empty( $asp_sermon_label ) ) {
 }
 
 // Sermon Date Format
-$asp_date_format = get_option( 'asp_general_date_format' );
+$asp_date_format = get_option('asp_general_date_format') ?: 'F j, Y';
 
 // Link Target Control
 $asp_target_control = get_option( 'asp_archive_target_control' );
